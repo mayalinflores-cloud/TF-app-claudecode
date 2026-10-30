@@ -69,6 +69,8 @@ export const translations = {
     storageNote: 'Tus datos se guardan solo en este navegador (localStorage).',
     stats: { movements: 'Movimientos', accounts: 'Cuentas' },
     required: 'Completa descripción y un monto mayor a 0',
+    selectAccount: 'Selecciona la cuenta del movimiento',
+    noAccounts: 'No tienes cuentas. Crea una en Billetera → Cuentas para registrar movimientos.',
     categories: {
       salary: 'Salario', freelance: 'Freelance', investments: 'Inversiones', sales: 'Ventas', gifts: 'Regalos',
       otherIncome: 'Otros ingresos', food: 'Comida', transport: 'Transporte', housing: 'Vivienda',
@@ -146,6 +148,8 @@ export const translations = {
     storageNote: 'Your data is stored only in this browser (localStorage).',
     stats: { movements: 'Transactions', accounts: 'Accounts' },
     required: 'Enter a description and an amount greater than 0',
+    selectAccount: 'Select the account for this transaction',
+    noAccounts: 'You have no accounts. Create one in Wallet → Accounts to record transactions.',
     categories: {
       salary: 'Salary', freelance: 'Freelance', investments: 'Investments', sales: 'Sales', gifts: 'Gifts',
       otherIncome: 'Other income', food: 'Food', transport: 'Transport', housing: 'Housing',

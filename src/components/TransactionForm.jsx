@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ArrowDownLeft, ArrowUpRight, Check } from 'lucide-react'
-import { CATEGORIES, CURRENCIES } from '../lib/constants'
+import { ACCOUNT_TYPES, CATEGORIES, CURRENCIES } from '../lib/constants'
 import { todayISO, useFinance } from '../lib/FinanceContext'
 
 export default function TransactionForm({ initialType = 'expense', onDone }) {
@@ -24,14 +24,16 @@ export default function TransactionForm({ initialType = 'expense', onDone }) {
     setForm((f) => ({ ...f, category: CATEGORIES[next][0].id }))
   }
 
-  const onAccountChange = (e) => {
-    const acc = accounts.find((a) => a.id === e.target.value)
-    setForm((f) => ({ ...f, accountId: e.target.value, currency: acc?.currency ?? f.currency }))
-  }
+  // Al elegir cuenta, la moneda pasa por defecto a la de esa cuenta
+  const selectAccount = (acc) => setForm((f) => ({ ...f, accountId: acc.id, currency: acc.currency }))
 
   const submit = (e) => {
     e.preventDefault()
     const amount = parseFloat(String(form.amount).replace(',', '.'))
+    if (!accounts.some((a) => a.id === form.accountId)) {
+      setError(t('selectAccount'))
+      return
+    }
     if (!form.description.trim() || !(amount > 0)) {
       setError(t('required'))
       return
@@ -66,16 +68,50 @@ export default function TransactionForm({ initialType = 'expense', onDone }) {
         ))}
       </div>
 
+      <fieldset>
+        <legend className="label">{t('account')}</legend>
+        {accounts.length ? (
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {accounts.map((acc) => {
+              const meta = ACCOUNT_TYPES[acc.type] ?? ACCOUNT_TYPES.wallet
+              const Icon = meta.icon
+              const selected = form.accountId === acc.id
+              return (
+                <button
+                  key={acc.id}
+                  type="button"
+                  onClick={() => selectAccount(acc)}
+                  aria-pressed={selected}
+                  className={`flex items-center gap-2 rounded-xl border p-2 text-left transition ${
+                    selected ? 'border-brand bg-brand/15 ring-2 ring-brand/30' : 'border-slate-700 hover:bg-slate-800'
+                  }`}
+                >
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br ${meta.gradient} text-white`}>
+                    <Icon size={16} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className={`block truncate text-xs font-semibold ${selected ? 'text-white' : 'text-slate-200'}`}>{acc.name}</span>
+                    <span className="block text-[10px] text-slate-500">{acc.currency}</span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200">{t('noAccounts')}</p>
+        )}
+      </fieldset>
+
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="label" htmlFor="tx-date">{t('date')}</label>
           <input id="tx-date" type="date" className="input" value={form.date} onChange={set('date')} required />
         </div>
         <div>
-          <label className="label" htmlFor="tx-account">{t('account')}</label>
-          <select id="tx-account" className="input" value={form.accountId} onChange={onAccountChange}>
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>{a.name}</option>
+          <label className="label" htmlFor="tx-cat">{t('category')}</label>
+          <select id="tx-cat" className="input" value={form.category} onChange={set('category')}>
+            {CATEGORIES[type].map((c) => (
+              <option key={c.id} value={c.id}>{t(`categories.${c.id}`)}</option>
             ))}
           </select>
         </div>
@@ -91,15 +127,6 @@ export default function TransactionForm({ initialType = 'expense', onDone }) {
           onChange={set('description')}
           maxLength={60}
         />
-      </div>
-
-      <div>
-        <label className="label" htmlFor="tx-cat">{t('category')}</label>
-        <select id="tx-cat" className="input" value={form.category} onChange={set('category')}>
-          {CATEGORIES[type].map((c) => (
-            <option key={c.id} value={c.id}>{t(`categories.${c.id}`)}</option>
-          ))}
-        </select>
       </div>
 
       <div className="grid grid-cols-[1fr_auto] gap-3">
@@ -131,7 +158,7 @@ export default function TransactionForm({ initialType = 'expense', onDone }) {
       )}
       {error && <p className="text-xs text-rose-400">{error}</p>}
 
-      <button type="submit" className="btn-primary w-full py-3">
+      <button type="submit" className="btn-primary w-full py-3" disabled={!accounts.length}>
         {success ? <><Check size={18} /> {t('saved')}</> : t('save')}
       </button>
     </form>
