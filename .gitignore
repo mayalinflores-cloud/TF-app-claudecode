@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Variables de entorno (nunca subir la API key)
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel

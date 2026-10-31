@@ -5,6 +5,7 @@ import Modal from './components/Modal'
 import ConfirmDialog from './components/ConfirmDialog'
 import TransactionForm from './components/TransactionForm'
 import RatesEditor from './components/RatesEditor'
+import Boti from './components/Boti'
 import Home from './screens/Home'
 import Stats from './screens/Stats'
 import Wallet from './screens/Wallet'
@@ -17,6 +18,7 @@ export default function App() {
   const [txModal, setTxModal] = useState(null) // 'income' | 'expense' | null
   const [ratesOpen, setRatesOpen] = useState(false)
   const [confirm, setConfirm] = useState(null) // 'movements' | 'all' | null
+  const [botiOpen, setBotiOpen] = useState(false)
 
   const go = (next) => {
     setTab(next)
@@ -25,6 +27,10 @@ export default function App() {
   const closeTx = useCallback(() => setTxModal(null), [])
   const closeRates = useCallback(() => setRatesOpen(false), [])
   const closeConfirm = useCallback(() => setConfirm(null), [])
+  const closeBoti = useCallback(() => {
+    setBotiOpen(false)
+    go('home')
+  }, [])
 
   return (
     <div className="min-h-screen bg-slate-950">
@@ -35,6 +41,7 @@ export default function App() {
             onAdd={setTxModal}
             onRates={() => setRatesOpen(true)}
             onClear={() => setConfirm('movements')}
+            onBoti={() => setBotiOpen(true)}
             onSeeAll={() => {
               setWalletTab('movements')
               go('wallet')
@@ -47,6 +54,9 @@ export default function App() {
       </main>
 
       <BottomNav active={tab} onChange={go} onAdd={() => setTxModal('expense')} />
+
+      {/* Se desmonta al cerrar, así cada sesión de chat empieza limpia */}
+      {botiOpen && <Boti onClose={closeBoti} />}
 
       <Modal open={!!txModal} onClose={closeTx} title={t('newMovement')}>
         {txModal && <TransactionForm key={txModal} initialType={txModal} onDone={closeTx} />}

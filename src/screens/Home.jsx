@@ -1,11 +1,11 @@
-import { ArrowDownLeft, ArrowUpRight, Eraser, Eye, EyeOff, RefreshCw, TrendingDown, TrendingUp } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, Bot, Eraser, Eye, EyeOff, RefreshCw, TrendingDown, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
 import { useFinance } from '../lib/FinanceContext'
 import TransactionItem from '../components/TransactionItem'
 import CategoryBars from '../components/CategoryBars'
 import EmptyState from '../components/EmptyState'
 
-export default function Home({ onAdd, onRates, onClear, onSeeAll }) {
+export default function Home({ onAdd, onRates, onClear, onSeeAll, onBoti }) {
   const { profile, totals, transactions, t, fmt, rates } = useFinance()
   const [hidden, setHidden] = useState(false)
   const recent = transactions.slice(0, 5)
@@ -25,8 +25,19 @@ export default function Home({ onAdd, onRates, onClear, onSeeAll }) {
           <p className="text-sm text-slate-400">{t('greeting')},</p>
           <h1 className="text-xl font-bold text-white">{profile.name} 👋</h1>
         </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-light to-brand-dark text-sm font-extrabold text-white shadow-brand">
-          TF
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onBoti}
+            className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/80 text-brand-pale transition hover:border-brand hover:text-white"
+            aria-label="Abrir Boti, tu asistente financiero"
+            title="Boti — Tu Asistente Financiero"
+          >
+            <Bot size={20} />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand-light ring-2 ring-slate-900" />
+          </button>
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-light to-brand-dark text-sm font-extrabold text-white shadow-brand">
+            TF
+          </div>
         </div>
       </header>
 
